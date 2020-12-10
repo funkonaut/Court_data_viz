@@ -1,0 +1,8 @@
+gspread
+numpy
+oauth2client
+pandas
+Pillow
+psycopg2-binary
+python-dotenv
+streamlit
