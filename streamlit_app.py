@@ -28,7 +28,6 @@ def read_data(creds):
     #    df.drop_duplicates("Case Number",inplace=True) #Do we want to drop duplicates???
         return df
     except Exception as e:
-        st.text(f"Invalid API key")
         return None
 
 
@@ -137,3 +136,5 @@ if __name__ == "__main__":
     df = copy.deepcopy(read_data(creds)) #Displays invalid API Key error on web page
     if df is not None:
          render_page(df)
+    else:
+        st.text(f"Invalid API key")
