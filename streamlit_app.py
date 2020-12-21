@@ -1,3 +1,4 @@
+import copy
 import datetime 
 from datetime import datetime
 import re 
@@ -19,7 +20,7 @@ def st_config():
     creds = st.sidebar.text_area("Enter API Key:")
     return creds
 
-
+@st.cache
 def read_data(creds):
     """Read court tracking data in and drop duplicate case numbers"""
     try:
@@ -73,9 +74,9 @@ def agg_cases(df,col,i):
 
 def agg_checklist(df_r):
     df_r["result"]=df_r.index
-    df_r = pd.concat([pd.Series(row['count'], row['result'].split(', ')) for _,row in df_r.iterrows()]).reset_index().groupby("index").sum()
+    df_b = pd.concat([pd.Series(row['count'], row['result'].split(', ')) for _,row in df_r.iterrows()]).reset_index().groupby("index").sum()
     df_a = pd.concat([pd.Series(row['cases'], row['result'].split(', ')) for _,row in df_r.iterrows()]).reset_index().groupby("index").agg(lambda x: ", ".join(x))
-    df_r = df_r.merge(df_a,right_index=True,left_index=True)
+    df_r = df_b.merge(df_a,right_index=True,left_index=True)
     return df_r 
 
 def clean_df(df):
@@ -88,6 +89,7 @@ def render_page(df):
     """Function to render all of the pages elements except the api key login"""
     #Clean Data
     df = clean_df(df)
+    
     #All Data Stats
     st.header("Court Tracking Data")
     #Collapsible All Data
@@ -132,6 +134,6 @@ def render_page(df):
 
 if __name__ == "__main__":
     creds = st_config()
-    df = read_data(creds) #Displays invalid API Key error on web page
+    df = copy.deepcopy(read_data(creds)) #Displays invalid API Key error on web page
     if df is not None:
          render_page(df)
