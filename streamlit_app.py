@@ -7,6 +7,7 @@ import pandas as pd
 from PIL import Image 
 import streamlit as st 
 from streamlit import markdown as md 
+from streamlit import caching
 import gsheet
 
 def is_unique(s):
@@ -137,4 +138,5 @@ if __name__ == "__main__":
     if df is not None:
          render_page(df)
     else:
+        caching.clear_cache()
         st.text(f"Invalid API key")
