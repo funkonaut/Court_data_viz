@@ -56,14 +56,6 @@ def write_data(sheet,df):
         logger.error(f"Failed to write data becase {error}")
 
 
-def dump_to_sheets(sheet,worksheet,sql="SELECT * FROM table"):
-    """Function to dump sql view or table to sheet based on q defaults to selecting all"""
-    sheet = open_sheet(init_sheets(), sheet, worksheet)
-    conn = connect_to_database.get_database_connection(local_dev=local_dev)
-    df = pd.read_sql_query(sql, conn)
-    write_data(sheet,df)
-
-
 #The following 3 functions should be done cleaner it is only used in the parse_settings code 
 #as we do not want to dump all the persisting data in the sql db to the scheduler sheet
 def filter_df(df,col,word):
