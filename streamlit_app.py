@@ -16,20 +16,23 @@ def is_unique(s):
 
 
 def st_config():
-    """Configure Streamlit view option and read in credential file if needed"""
+    """Configure Streamlit view option and read in credential file if needed check if user and password are correct"""
     st.set_page_config(layout="wide")
-    creds = st.sidebar.text_area("Enter API Key:")
-    return creds
+    pw = st.sidebar.text_input("Enter password:")
+    if pw == st.secrets["PASSWORD"]:
+        return st.secrets["GSHEETS_KEY"]
+    else:
+        return None
 
 @st.cache
 def read_data(creds):
     """Read court tracking data in and drop duplicate case numbers"""
-    try:
-        df = gsheet.read_data(gsheet.open_sheet(gsheet.init_sheets(creds),"01_Community_lawyer_test_out_final","Frontend"))
+#    try:
+    df = gsheet.read_data(gsheet.open_sheet(gsheet.init_sheets(creds),"01_Community_lawyer_test_out_final","Frontend"))
     #    df.drop_duplicates("Case Number",inplace=True) #Do we want to drop duplicates???
-        return df
-    except Exception as e:
-        return None
+    return df
+#    except Exception as e:
+#        return None
 
 
 #UI start date end date/ eviction motion or both drop duplicates?:
@@ -134,9 +137,9 @@ def render_page(df):
 
 if __name__ == "__main__":
     creds = st_config()
-    df = copy.deepcopy(read_data(creds)) #Displays invalid API Key error on web page
-    if df is not None:
+    if creds is not None:
+         df = copy.deepcopy(read_data(creds)) #Displays invalid API Key error on web page
          render_page(df)
     else:
         caching.clear_cache()
-        st.text(f"Invalid API key")
+        st.text(f"Invalid password.")

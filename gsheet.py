@@ -19,16 +19,12 @@ logger = logging.getLogger()
 logging.basicConfig(stream=sys.stdout)
 logger.setLevel(logging.INFO)
 
-local_dev = os.getenv("LOCAL_DEV") == "true"
 
 
 def init_sheets(creds):
     """Function to initialize google sheets API uses credentials in an env var"""
-    if local_dev:
-        json_creds = os.getenv("GOOGLE_SHEETS_CREDS_JSON")
-    else:
-        json_creds = creds
-    creds_dict = json.loads(json_creds)
+    json_creds = creds
+    creds_dict = json.loads(json_creds,strict=False)
     creds_dict["private_key"] = creds_dict["private_key"].replace("\\\\n", "\n")
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
     client = gspread.authorize(creds)

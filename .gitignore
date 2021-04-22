@@ -1,3 +1,5 @@
 .env
 *.swo
 *.swp
+.streamlit
+.streamlit/secrets.toml
