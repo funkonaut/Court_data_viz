@@ -10,8 +10,6 @@ import gspread
 import numpy as np
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-#import simplejson as json
-import connect_to_database
 
 load_dotenv()
 
