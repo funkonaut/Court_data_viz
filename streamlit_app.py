@@ -339,7 +339,11 @@ def judge_data_filings(df_ef):
         .nunique()
 #        .sort_values(ascending=False)
     )
-    fig = px.bar(df_efjp,x=df_efjp.index,y='case_number')
+    fig = px.bar(
+        df_efjp,
+        x=df_efjp.index,
+        y='case_number'
+    )
     display_col[0].markdown("### Cases filed by judge")
     display_col[0].plotly_chart(fig,use_container_width=True) 
     
@@ -482,7 +486,7 @@ def judgement_data(dfj):
         #possesion break downs
         df_graph.at[i,"Possesion Awarded"] = len(dfj.loc[dfj["poss_awarded"]].loc[dfj["precinct"]==str(i)]) #this is not accurate
         #amount breakdowns
-        df_graph.at[i,"Amount Awarded"] =  '${:,.2f}'.format(dfj.loc[(dfj["precinct"]==str(i)) & (dfj["judgement_for"]=="PLAINTIFF")]["amount_awarded"].sum())
+        df_graph.at[i,"Amount Awarded"] = float(dfj.loc[(dfj["precinct"]==str(i)) & (dfj["judgement_for"]=="PLAINTIFF")]["amount_awarded"].sum())
         #judgement breakdowns
         df_graph.at[i,"Judgment For Plaintiff"] =  len(dfj.loc[(dfj["judgement_for"] == "PLAINTIFF") & (dfj["precinct"]==str(i))])
         df_graph.at[i,"Judgment For Defendant"] =  len(dfj.loc[(dfj["judgement_for"] == "DEFENDANT") & (dfj["precinct"]==str(i))])
@@ -495,6 +499,9 @@ def judgement_data(dfj):
         df_bar,
         x = df_bar.index,
         y = "Amount Awarded",
+        labels={
+            "index": "Justice of the Peace"
+        },
         orientation = "v",
         title = "Amounts Awarded by Precinct"       
     ) 
@@ -512,7 +519,8 @@ def judgement_data(dfj):
             title = f"Precinct {i} Case Outcomes"
         )
         display[(i)%2].plotly_chart(fig)
-          
+    display[0].markdown("### Judgment Data")      
+    df_graph["Amount Awarded"] = df_graph["Amount Awarded"].apply(lambda x: '${:,.2f}'.format(float(x)))
     display[0].write(df_graph)
 
 
@@ -527,20 +535,25 @@ def representation_data(df):
         df_graph.at[i,"Defendants Attorneys"] = len(df.loc[(df["attorneys_for_defendants"]!= "PRO SE") & (df["attorneys_for_defendants"]!="") & (df["precinct"]==str(i))])
         df_graph.at[i,"Plaintiffs Pro Se"] =  len(df.loc[(df["attorneys_for_plaintiffs"]== "PRO SE") & (df["attorneys_for_plaintiffs"]!="") & (df["precinct"]==str(i))])
         df_graph.at[i,"Defendants Pro Se"] =  len(df.loc[(df["attorneys_for_defendants"]== "PRO SE") & (df["attorneys_for_defendants"]!="") & (df["precinct"]==str(i))])
-        df_graph.at[i,"Plaintiffs No Rep"] =  len(df.loc[(df["attorneys_for_defendants"]=="") & (df["precinct"]==str(i))])
-        df_graph.at[i,"Defendants No Rep"] =  len(df.loc[(df["attorneys_for_defendants"]=="") & (df["precinct"]==str(i))])
+        df_graph.at[i,"Plaintiffs No Rep Data"] =  len(df.loc[(df["attorneys_for_defendants"]=="") & (df["precinct"]==str(i))])
+        df_graph.at[i,"Defendants No Rep Data"] =  len(df.loc[(df["attorneys_for_defendants"]=="") & (df["precinct"]==str(i))])
         #total number of cases
-        df_graph.at[i,"Total Number of cases"] = len(df.loc[df["precinct"]==str(i)])
+        df_graph.at[i,"Total Number of Cases"] = len(df.loc[df["precinct"]==str(i)])
+#    display[0].markdown("### Defendant Representation Counts")
     display[0].markdown("### Representation Counts")
-    fig = px.bar(df_graph,x=df_graph.index,y=["Defendants Attorneys","Plaintiffs Attorneys","Defendants Pro Se","Plaintiffs Pro Se"])
     display[0].write(df_graph)
-    display[0].markdown("### Representation Bar Graph")
-    display[0].plotly_chart(fig)
+#    display[0].markdown("### Defendant Representation Counts")
+#    display[0].write(df_graph[["Defendants Attorneys","Defendants Pro Se","Defendants No Rep","Total Number of Cases"]])
+#    display[1].markdown("### Plaintiff Representation Counts")
+#    display[1].write(df_graph[["Plaintiffs Attorneys","Plaintiffs Pro Se","Plaintiffs No Rep","Total Number of Cases"]])
+    #display[0].markdown("### Representation Bar Graph")
+   # fig = px.bar(df_graph,x=df_graph.index,y=["Defendants Attorneys","Plaintiffs Attorneys","Defendants Pro Se","Plaintiffs Pro Se"])
+    #display[0].plotly_chart(fig)
     #top plaintiff attorneys
     df_a = df[(df["attorneys_for_plaintiffs"]!="PRO SE") & (df["attorneys_for_plaintiffs"]!="")]
     df_af = df_a.groupby("attorneys_for_plaintiffs").count()["case_number"].sort_values(ascending=False)
-    display[1].markdown("### Top Plaintiff Attorneys")
-    display[1].write(df_af)
+    display[0].markdown("### Top Plaintiff Attorneys")
+    display[0].write(df_af)
 
 
 def plaintiff_data(df_ef):
@@ -589,8 +602,8 @@ def property_data(df_ef):
 
 def subsidy_data(df_ef):
     cols = st.beta_columns(2)
-    display[0].markdown("## Property Subsidy Information")
-    display[1].markdown("## ")
+    cols[0].markdown("## Property Subsidy Information")
+    cols[1].markdown("## ")
     #HACA is Has Sec 8 Voucher
     df = df_ef.loc[(df_ef["HACA"]=="TRUE") | (df_ef["CARES"]=="TRUE") | (df_ef["nhpd_property_id"]!="") ]
     df = pd.DataFrame(df
