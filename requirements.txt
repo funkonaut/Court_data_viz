@@ -3,6 +3,7 @@ numpy
 oauth2client
 pandas
 Pillow
+plotly
 psycopg2-binary
 python-dotenv
 streamlit
