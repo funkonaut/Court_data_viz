@@ -541,6 +541,7 @@ def representation_data(df):
         df_graph.at[i,"Total Number of Cases"] = len(df.loc[df["precinct"]==str(i)])
 #    display[0].markdown("### Defendant Representation Counts")
     display[0].markdown("### Representation Counts")
+    df_graph = df_graph.astype(int)
     display[0].write(df_graph)
 #    display[0].markdown("### Defendant Representation Counts")
 #    display[0].write(df_graph[["Defendants Attorneys","Defendants Pro Se","Defendants No Rep","Total Number of Cases"]])
